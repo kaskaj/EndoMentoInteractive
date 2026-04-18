@@ -45,8 +45,9 @@ const shrinkMin = 0.02;
 const shrinkMax = 1;
 const transitionStep = 0.02;
 
-// Font 
-let font;
+// Font
+let fontSemiBold;
+let fontSemiBoldIt;
 
 // Recognition handles
 let faceDetected = false;
@@ -64,8 +65,16 @@ const stageTransitionOut = 5;
 const infoWaitTime = 1000;
 const POLL_MS = 10;
 
+// Load font
 function preload() {
-  font = loadFont('font.ttf');
+  const scriptUrl = document.currentScript
+  ? new URL(document.currentScript.src, window.location.href)
+  : new URL("interactive.js", window.location.href);
+  const fontUrlSemiBold = new URL("STIXTwoText-SemiBold.ttf", scriptUrl).href;
+  const fontUrlSemiBoldIt = new URL("STIXTwoText-SemiBoldItalic.ttf", scriptUrl).href;
+
+  fontSemiBold = loadFont(fontUrlSemiBold);
+  fontSemiBoldIt = loadFont(fontUrlSemiBoldIt);
 }
 
 function configureBrushes() {
@@ -301,11 +310,15 @@ function playAnimation(){
 }
 
 function showInvite() {
-  fill(255);
-  textFont(font);
+  fill(colorBG);
+  rectMode(CENTER);
   textAlign(CENTER,CENTER);
+  textLeading(45);
   textSize(50);
-  text("Ahoj! Mávnutím ukazováčku se dozvíš více...", width/2, height/2);
+  textFont(fontSemiBold);
+  text("Draw a ribbon in the air to learn more about this project. /", width/2, height/2 - 50, 800, 200);
+  textFont(fontSemiBoldIt);
+  text("Nakreslete stuhu ve vzduchu a zjistěte více o tomto projektu.", width/2, height/2 + 50, 900, 200);
 }
 
 function showInfo(){
@@ -314,7 +327,7 @@ function showInfo(){
   else if (noiseFieldTopSample < secHigh && noiseFieldTopSample > secLow) { infoTextColor = 0; }
   else { infoTextColor = 0; } 
   fill(infoTextColor);
-  textFont(font);
+  textFont(fontSemiBold);
   textAlign(CENTER,CENTER);
   textSize(50);
   text("EndoMento je skvělý projekt!", width/2, height/2);
