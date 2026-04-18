@@ -65,7 +65,7 @@ const infoWaitTime = 1000;
 const POLL_MS = 10;
 
 function preload() {
-  font = loadFont('/font.ttf');
+  font = loadFont('font.ttf');
 }
 
 function configureBrushes() {
