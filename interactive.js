@@ -219,43 +219,36 @@ async function runInteractiveFlow() {
     shrink = shrinkMin;
     await waitForShrinkRestored();
     // And go back to the animation
-    stage = stageAnimation;
+    //stage = stageAnimation;
   }
 }
 
 // Main logic
 function drawScene() {
+  playAnimation();
   // Visitor is invited to interaction
   // (Text is shown over animation)
   if (stage == stageInvite) {
-    playAnimation();
     brush.reDraw(); // Flushes the brush buffer
     showInvite();
   }
   // Visitor want to see more information
   // (Animation will transition into calm background)
   else if (stage == stageTransitionIn) {
-    playAnimation();
     shrink -= transitionStep;
     if (shrink < shrinkMin) { shrink = shrinkMin; }
   }
   // Visitior is reading the information
   // (Informative text is shown)
   else if (stage == stageInfo) {
-    playAnimation();
     brush.reDraw();
     showInfo();
   }
   // Interaction ended
   // (Transition from background back to animation)
   else if (stage == stageTransitionOut) {
-    playAnimation();
     shrink += transitionStep;
     if (shrink > shrinkMax) { shrink = shrinkMax; }
-  }
-  // (Animation is playing again)
-  else {
-    playAnimation();
   }
 }
 
@@ -318,7 +311,7 @@ function showInvite() {
   textFont(fontSemiBold);
   text("Draw a ribbon in the air to learn more about this project. /", width/2, height/2 - 50, 800, 200);
   textFont(fontSemiBoldIt);
-  text("Nakreslete stuhu ve vzduchu a zjistěte více o tomto projektu.", width/2, height/2 + 50, 900, 200);
+  text("Nakreslete stuhu ve vzduchu a zjistěte více o tomto projektu.", width/2, height/2 + 50, 900, 200);
 }
 
 function showInfo(){
