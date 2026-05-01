@@ -41,13 +41,15 @@ let noiseFieldTopSample = 0;
 
 // Transition
 let shrink = 1;
-const shrinkMin = 0.02;
+const shrinkMin = 0.04;
 const shrinkMax = 1;
 const transitionStep = 0.02;
 
 // Font
 let fontSemiBold;
 let fontSemiBoldIt;
+let inviteString = "Nakreslete stuhu ve vzduchu a zjistěte\nvíce o tomto projektu.";
+let inviteStringEng = "Draw a ribbon in the air to learn\nmore about this project.";
 
 // Recognition handles
 let faceDetected = false;
@@ -60,6 +62,7 @@ const stageInvite = 2;
 const stageTransitionIn = 3;
 const stageInfo = 4;
 const stageTransitionOut = 5;
+let pickQuote;
 
 // Interaction timing
 const infoWaitTime = 1000;
@@ -212,6 +215,7 @@ async function runInteractiveFlow() {
     stage = stageTransitionIn;
     await waitForShrinkReached();
     // Show more info if the face is detected
+    pickQuote = int(random(0, QuotesCzech.length));
     stage = stageInfo;
     await waitForFaceLost(infoWaitTime);
     // If there is no face anymore, wait few seconds then transition
@@ -303,32 +307,45 @@ function playAnimation(){
 }
 
 function showInvite() {
-  fill(colorBG);
-  rectMode(CENTER);
-  textAlign(CENTER,CENTER);
-  textLeading(45);
-  textSize(50);
-  textFont(fontSemiBold);
-  text("Draw a ribbon in the air to learn more about this project. /", width/2, height/2 - 50, 800, 200);
-  textFont(fontSemiBoldIt);
-  text("Nakreslete stuhu ve vzduchu a zjistěte více o tomto projektu.", width/2, height/2 + 50, 900, 200);
+  push();
+  fill(0);
+    translate(width / 2, height / 2);
+    //rotate(90);
+    //rectMode(CENTER);
+    fill(colorBG);
+    textLeading(36);
+    textSize(36);
+    textFont(fontSemiBold);
+    textAlign(CENTER, BOTTOM);
+    text(inviteString, 0,  0);
+    textFont(fontSemiBoldIt);
+    textAlign(CENTER, TOP);
+    text(inviteStringEng, 0, 2);
+  pop();
 }
 
 function showInfo(){
   let infoTextColor = 0;
   if (noiseFieldTopSample >= secHigh) { infoTextColor = 255; }
   else if (noiseFieldTopSample < secHigh && noiseFieldTopSample > secLow) { infoTextColor = 0; }
-  else { infoTextColor = 0; } 
-  fill(infoTextColor);
-  textFont(fontSemiBold);
-  textAlign(CENTER,CENTER);
-  textSize(50);
-  text("EndoMento je skvělý projekt!", width/2, height/2);
+  else { infoTextColor = 0; }
+  push();
+    fill(0);
+    translate(width / 2, height / 2);
+    //rotate(90);
+    //rectMode(CENTER);
+    fill(infoTextColor);
+    textLeading(60);
+    textSize(60);
+    textFont(fontSemiBold);
+    textAlign(CENTER, BOTTOM);
+    text(QuotesCzech[pickQuote], 0, 0);
+    textFont(fontSemiBoldIt);
+    textAlign(CENTER, TOP);
+    text(QuotesEnglish[pickQuote], 0, 1);
+  pop();
 }
 
-//=============== p5 MAIN ===============
-
-// Setup
 function setup() {
   pixelDensity(pixDensity);
   angleMode(DEGREES);
@@ -339,9 +356,128 @@ function setup() {
   runInteractiveFlow();
 }
  
-// Draw
 function draw() {
   background(colorBG);
   translate(-width / 2, -height / 2);
   drawScene();
 }
+
+const QuotesCzech = [
+"Endometrióza se týká přibližně\n1 z 10 žen v reprodukčním věku.",
+"Na světě žije 176 milionů\nžen s endometriózou.",
+"Než uslyšíte diagnózu, uplyne\nv průměru 7–10 let.",
+"Endometrióza znamená, že tkáně podobné\nděložní sliznici rostou mimo dělohu.",
+"Endometrióza může způsobovat\nsrůsty – orgány se lepí k sobě.",
+"Endometrióza může deformovat\nvaječníky a vejcovody.",
+"Endometrióza může měnit\nstrukturu i funkci orgánů.",
+"Endometrióza ovlivňuje\nfungování celého těla.",
+"Endometrióza může dráždit\nnervová zakončení.",
+"Endometrióza může zvyšovat\ncitlivost na bolest.",
+"Bolest kvůli endometrióze může časem\nzesilovat, i když nález zůstává stejný.",
+"Bolest u endometriózy bývá\nchronická i cyklická.",
+"Bolest kvůli endometrióze\nmůžeme zažívat každý den.",
+"Během menstruace ženy s endometriózou\nčasto zvrací a omdlévají.",
+"Těhotenství se někdy prezentuje jako\nřešení, ale endometriózu nevyléčí.",
+"Odebrání dělohy nezaručí\nvyléčení endometriózy, přesto\ntento mýtus přetrvává.",
+"Endometrióza může zásadně\nomezit každodenní fungování.",
+"Fyzioterapie a psychoterapie mohou\npomoci, ne každá žena si je může dovolit.",
+"Endometrióza může\nvést k neplodnosti.",
+"Endometrióza může ovlivnit\nschopnost otěhotnět.",
+"Až polovina žen s neplodností\nmá endometriózu.",
+"Nevíme přesně, proč endometrióza\nvzniká, a neumíme ji vyléčit.",
+"Léčba existuje, vyléčení ne.",
+"Endometriózu popsali už v 19. století.\nDodnes ji neumíme vyléčit.",
+"Na endometriózu se často předepisuje\nhormonální antikoncepce.",
+"Když hormonální léčba nezabere, může\nse navodit stav podobný přechodu.",
+"Endometrióza se může vrátit\ni krátce po operaci.",
+"Endometrióza znamená\nchronický zánět v těle.",
+"Endometrióza není jen silná\nnebo bolestivá menstruace.",
+"Bolest při endometrióze se může\nobjevovat i mimo menstruaci.",
+"Endometrióza znamená,\nže sex může bolet.",
+"Endometrióza může zasáhnout\ni střeva a močový měchýř.",
+"Endometrióza byla popsána i mimo\npánev, například v plicích.",
+"Léčba endometriózy často znamená\nvolbu mezi příznaky nemoci\na vedlejšími účinky léčby.",
+"Endometrióza často znamená\ni chronickou únavu.",
+"Endometrióza může ovlivnit\nsoustředění a paměť.",
+"Příznaky endometriózy jsou\nněkdy zaměňovány za stres\nnebo psychické potíže.",
+"Endometrióza se často řeší\npotlačením hormonálního cyklu.",
+"Léčba neodstraňuje nemoc,\njen ji ztiší.",
+"Diagnóza endometriózy se\nčasto potvrzuje až operací.",
+"Ultrazvuk nemusí endometriózu odhalit.",
+"Magnetická rezonance nemusí\nendometriózu vždy zachytit.",
+"Endometrióza má různé formy a projevy;\nne všechny vidíme na ultrazvuku.",
+"Síla bolesti u endometriózy neodpovídá\nvždy rozsahu onemocnění.",
+"I malé ložisko endometriózy může\nzpůsobovat silnou bolest.",
+"Ženy s endometriózou mají až\ndvakrát vyšší riziko deprese.",
+"Endometrióza může ovlivnit pracovní\nschopnost i partnerské vztahy.",
+"Některé ženy kvůli endometrióze\nmění práci nebo tempo života.",
+"Endometrióza není vidět,\nale její dopady jsou reálné.",
+"Endometrióza může znemožnit\nběžné fungování během dne.",
+"Jsou dny, kdy ženy s endometriózou\nnezvládnou vstát z postele.",
+"Hormonální léčba může ovlivnit\nnáladu, energii i libido.",
+"Chronická bolest mění fungování\nnervového systému, nedělá nás silnější.",
+"Bolest u endometriózy není jen\nlokální, ovlivňuje celé tělo.",
+"Výzkum endometriózy je\ndlouhodobě podfinancovaný.",
+"Silná bolest při menstruaci\nnení normální.",
+"Zvracení a mdloby při menstruaci\nnejsou normální."
+];
+
+const QuotesEnglish = [
+  "Endometriosis affects approximately\n1 in 10 women of reproductive age.",
+"176 million women worldwide\nlive with endometriosis.",
+"It takes an average of 7–10 years\nbefore receiving a diagnosis.",
+"Endometriosis means tissue similar to the\nuterine lining grows outside the uterus.",
+"Endometriosis can cause adhesions –\norgans stick together.",
+"Endometriosis can deform\nthe ovaries and fallopian tubes.",
+"Endometriosis can change the structure\nand function of organs.",
+"Endometriosis affects the functioning\nof the whole body.",
+"Endometriosis can irritate\nnerve endings.",
+"Endometriosis can increase\nsensitivity to pain.",
+"Pain caused by endometriosis\ncan worsen over time, even when\nfindings remain the same.",
+"Pain in endometriosis is often\nboth chronic and cyclical.",
+"Pain caused by endometriosis can\nbe experienced every day.",
+"During menstruation, women with\nendometriosis often vomit and faint.",
+"Pregnancy is sometimes presented\nas a solution, but it does not\ncure endometriosis.",
+"Removal of the uterus does not\nguarantee a cure for endometriosis,\nyet this myth per-sists.",
+"Endometriosis can significantly\nlimit daily functioning.",
+"Physiotherapy and psychotherapy can help,\nbut not every woman can afford them.",
+"Endometriosis can\nlead to infertility.",
+"Endometriosis can affect\nthe ability to conceive.",
+"Up to half of women with infertility\nhave endometriosis.",
+"We do not know exactly why endometriosis\ndevelops, and we cannot cure it.",
+"Treatment exists, but not a cure.",
+"Endometriosis was already described in\nthe 19th century. We still cannot cure it.",
+"Hormonal contraception is often\nprescribed for endometriosis.",
+"When hormonal treatment does not work,\na menopause-like state may be induced.",
+"Endometriosis can return even\nshortly after surgery.",
+"Endometriosis means chronic\ninflammation in the body.",
+"Endometriosis is not just\na heavy or painful period.",
+"Pain from endometriosis can occur\neven outside menstruation.",
+"Endometriosis means\nsex can be painful.",
+"Endometriosis can also affect\nthe bowels and bladder.",
+"Endometriosis has also been found outside\nthe pelvis, for example in the lungs.",
+"Treatment of endometriosis often means\nchoosing between symptoms of the disease\nand side effects of treatment.",
+"Endometriosis often also\nmeans chronic fatigue.",
+"Endometriosis can affect\nconcentration and memory.",
+"Symptoms of endometriosis are\nsometimes mistaken for stress\nor psychological problems.",
+"Endometriosis is often managed by\nsuppressing the hormonal cycle.",
+"Treatment does not remove\nthe disease, it only quiets it.",
+"A diagnosis of endometriosis is often\nconfirmed only through surgery.",
+"Ultrasound may not detect endometriosis.",
+"MRI may not always\ndetect endometriosis.",
+"Endometriosis has different\nforms and manifestations; not all\nare visible on ultrasound.",
+"The severity of pain in endometriosis\ndoes not always correspond to\nthe extent of the dis-ease.",
+"Even a small endometriosis\nlesion can cause severe pain.",
+"Women with endometriosis have up\nto twice higher risk of depression.",
+"Endometriosis can affect work\nability and relationships.",
+"Some women change jobs or their pace\nof life because of endometriosis.",
+"Endometriosis is invisible,\nbut its impacts are real.",
+"Endometriosis can make normal\ndaytime functioning impossible.",
+"There are days when women with\nendometriosis cannot get out of bed.",
+"Hormonal treatment can affect\nmood, energy, and libido.",
+"Chronic pain changes how\nthe nervous system functions;\nit does not make us stronger.",
+"Pain in endometriosis is not only\nlocal, it affects the whole body.",
+"Research on endometriosis has\nlong been underfunded.",
+"Severe pain during menstruation\nis not normal.",
+"Vomiting and fainting during\nmenstruation are not normal."
+];
