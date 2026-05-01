@@ -41,9 +41,9 @@ let noiseFieldTopSample = 0;
 
 // Transition
 let shrink = 1;
-const shrinkMin = 0.04;
+const shrinkMin = 0.02;
 const shrinkMax = 1;
-const transitionStep = 0.02;
+const transitionStep = 0.04;
 
 // Font
 let fontSemiBold;

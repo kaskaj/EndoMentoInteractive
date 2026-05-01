@@ -28,23 +28,17 @@ function setHandles(faceDetected, pointingFingerMovementDetected) {
   }
 }
 
-function detectPointingFinger(landmarksList) {
-  if (!landmarksList || landmarksList.length === 0) {
+function detectPointingFinger(gestureResults) {
+  const gestures = gestureResults.gestures;
+  if (!gestures || gestures.length === 0 || gestures[0].length === 0) {
     return 0;
   }
 
-  const lm = landmarksList[0];
-  if (!lm || lm.length < 21) {
-    return 0;
-  }
+  const topGesture = gestures[0][0];
+  const pointingUp = topGesture.categoryName === "Pointing_Up";
+  const confident = topGesture.score > 0.6;
 
-  const indexUp = lm[8].y < lm[6].y;
-  const middleDown = lm[12].y > lm[10].y;
-  const ringDown = lm[16].y > lm[14].y;
-  const pinkyDown = lm[20].y > lm[18].y;
-  const oneFingerUp = indexUp && middleDown && ringDown && pinkyDown;
-
-  return oneFingerUp ? 1 : 0;
+  return pointingUp && confident ? 1 : 0;
 }
 
 function predictWebcam() {
@@ -64,7 +58,7 @@ function predictWebcam() {
 
     const gestureResults = gestureRecognizer.recognizeForVideo(hiddenVideo, now);
     const pointingFingerMovementDetected = detectPointingFinger(
-      gestureResults.landmarks
+      gestureResults
     );
 
     setHandles(cachedFaceDetected, pointingFingerMovementDetected);
