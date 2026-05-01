@@ -7,16 +7,9 @@ import {
 let gestureRecognizer;
 let faceDetector;
 let lastVideoTime = -1;
-let lastFingerPos = null;
-let movementAccum = 0;
-let lastMovementTs = 0;
-let lastOneFingerTs = 0;
 let cachedFaceDetected = 0;
 let lastFaceInferenceTs = 0;
 
-const movementThreshold = 0.1;
-const oneFingerLostGraceMs = 220;
-const movementDecayPerSecond = 0.06;
 const faceDetectIntervalMs = 140;
 
 const hiddenVideo = document.createElement("video");
@@ -35,27 +28,13 @@ function setHandles(faceDetected, pointingFingerMovementDetected) {
   }
 }
 
-function detectPointingFingerMovement(landmarksList, now) {
-  if (lastMovementTs > 0) {
-    const dtSec = Math.max(0, (now - lastMovementTs) / 1000);
-    movementAccum = Math.max(0, movementAccum - movementDecayPerSecond * dtSec);
-  }
-  lastMovementTs = now;
-
+function detectPointingFinger(landmarksList) {
   if (!landmarksList || landmarksList.length === 0) {
-    if (now - lastOneFingerTs > oneFingerLostGraceMs) {
-      lastFingerPos = null;
-      movementAccum = 0;
-    }
     return 0;
   }
 
   const lm = landmarksList[0];
   if (!lm || lm.length < 21) {
-    if (now - lastOneFingerTs > oneFingerLostGraceMs) {
-      lastFingerPos = null;
-      movementAccum = 0;
-    }
     return 0;
   }
 
@@ -65,29 +44,7 @@ function detectPointingFingerMovement(landmarksList, now) {
   const pinkyDown = lm[20].y > lm[18].y;
   const oneFingerUp = indexUp && middleDown && ringDown && pinkyDown;
 
-  const fx = lm[8].x;
-  const fy = lm[8].y;
-
-  if (oneFingerUp) {
-    lastOneFingerTs = now;
-    if (lastFingerPos) {
-      const dx = fx - lastFingerPos.x;
-      const dy = fy - lastFingerPos.y;
-      movementAccum += Math.hypot(dx, dy);
-    }
-    lastFingerPos = { x: fx, y: fy };
-  } else if (now - lastOneFingerTs > oneFingerLostGraceMs) {
-    lastFingerPos = null;
-    movementAccum = 0;
-  }
-
-  if (movementAccum >= movementThreshold) {
-    movementAccum = 0;
-    lastFingerPos = null;
-    return 1;
-  }
-
-  return 0;
+  return oneFingerUp ? 1 : 0;
 }
 
 function predictWebcam() {
@@ -106,9 +63,8 @@ function predictWebcam() {
     }
 
     const gestureResults = gestureRecognizer.recognizeForVideo(hiddenVideo, now);
-    const pointingFingerMovementDetected = detectPointingFingerMovement(
-      gestureResults.landmarks,
-      now
+    const pointingFingerMovementDetected = detectPointingFinger(
+      gestureResults.landmarks
     );
 
     setHandles(cachedFaceDetected, pointingFingerMovementDetected);
